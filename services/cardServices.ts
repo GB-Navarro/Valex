@@ -152,6 +152,16 @@ function checkCardSecurityCode(receivedSecurityCode:string, encryptedRealSecurit
     }
 }
 
+function checkCardPasswordValidity(cardPassword: string){
+    
+    const regex = /^[0-9]{4}$/;
+    const isPasswordValid: boolean = regex.test(cardPassword);
+
+    if(!(isPasswordValid)){
+        throw { code: "error_cardPasswordIsNotValid", message: "The card password must be composed of 4 numbers" }
+    }
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -161,7 +171,8 @@ const cardServices = {
     getCardData,
     checkCardExpirationDate,
     checkIfCardHasAlreadyBeenActivated,
-    checkCardSecurityCode
+    checkCardSecurityCode,
+    checkCardPasswordValidity
 }
 
 export default cardServices;

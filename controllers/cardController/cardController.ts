@@ -21,9 +21,12 @@ async function createCard (req: Request, res: Response){
 async function activateCard(req: Request, res: Response){
     const {cardId, cardCVC: receivedSecurityCode, cardPassword} = req.body
     const { expirationDate, password, securityCode: encryptedRealSecurityCode } = await cardServices.getCardData(cardId);
+    
     cardServices.checkCardExpirationDate(expirationDate);
     cardServices.checkIfCardHasAlreadyBeenActivated(password);
     cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
+    cardServices.checkCardPasswordValidity(cardPassword);
+
     res.status(200).send("Hello World");
 }
 
