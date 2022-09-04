@@ -1,6 +1,7 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
+import { findByCardId as findTransactionsByCardId } from "../repositories/paymentRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -168,6 +169,16 @@ async function activateCard(cardId:number, cardPassword: string){
     const result = await update(cardId, {password: encryptedCardPassword});
 }
 
+async function getCardTransactions(cardId: number){
+    const result = await findTransactionsByCardId(cardId);
+    if(result.length === 0){
+        throw { code: "error_cardDoesNotHaveTransactions", message: "This card does not have transactions" }
+    }else{
+        return result;
+    }
+
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -179,7 +190,8 @@ const cardServices = {
     checkIfCardHasAlreadyBeenActivated,
     checkCardSecurityCode,
     checkReceivedPasswordValidity,
-    activateCard
+    activateCard,
+    getCardTransactions
 }
 
 export default cardServices;
