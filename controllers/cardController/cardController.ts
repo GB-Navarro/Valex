@@ -31,7 +31,7 @@ async function activateCard(req: Request, res: Response){
     res.status(202).send("The card has been activated!");
 }
 
-async function viewCardBalance(req: Request, res: Response, next: NextFunction){
+async function viewCardBalance(req: Request, res: Response){
     const { cardId } = req.body;
 
     await cardServices.getCardData(cardId);
@@ -42,21 +42,32 @@ async function viewCardBalance(req: Request, res: Response, next: NextFunction){
     res.status(200).send(balanceData);
 }
 
-async function blockCard(req: Request, res: Response, next: NextFunction){
+async function blockCard(req: Request, res: Response){
+    const { cardId, cardPassword:ReceivedPassword } = req.body;
+    const { expirationDate, isBlocked:cardIsBlocked, password:cardPassword } = await cardServices.getCardData(cardId);
+    cardServices.checkCardExpirationDate(expirationDate);
+    cardServices.checkIfCardAreUnblocked(cardIsBlocked);
+    cardServices.checkPasswordValidity(ReceivedPassword, cardPassword);
+    await cardServices.blockCard(cardId);
+    res.status(200).send("The card has been blocked");
+}
+
+async function unblockCard(req: Request, res: Response){
     const { cardId, cardPassword:ReceivedPassword } = req.body;
     const { expirationDate, isBlocked:cardIsBlocked, password:cardPassword } = await cardServices.getCardData(cardId);
     cardServices.checkCardExpirationDate(expirationDate);
     cardServices.checkIfCardAreBlocked(cardIsBlocked);
     cardServices.checkPasswordValidity(ReceivedPassword, cardPassword);
-    await cardServices.blockCard(cardId);
-    res.status(200).send("The card has been blocked");
+    await cardServices.unblockCard(cardId);
+    res.status(200).send("The card has been unblocked");
 }
 
 const cardController = {
     createCard,
     activateCard,
     viewCardBalance,
-    blockCard
+    blockCard,
+    unblockCard
 }
 
 export default cardController;
