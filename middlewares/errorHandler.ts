@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 export default async function errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
-    if (error.code === "error_apiKeyHasNoOwner" || error.code === "error_employeeDontExist" || error.code === "error_cardDoesNotExist" || error.code === "error_cardHasAlreadyBeenActivated" || error.code === "error_cardPasswordFormatIsNotValid" || error.code === "error_cardAlreadyIsBlocked") {
+    if (error.code === "error_apiKeyHasNoOwner" || error.code === "error_employeeDontExist" || error.code === "error_cardDoesNotExist" || error.code === "error_cardHasAlreadyBeenActivated" || error.code === "error_cardPasswordFormatIsNotValid" || error.code === "error_cardAlreadyIsBlocked" || error.code === "error_cardAlreadyIsUnblocked") {
         return res.status(404).send({ message: error.message });
     }
     if (error.code === "error_employeeAlreadyHasThisTypeOfCard") {

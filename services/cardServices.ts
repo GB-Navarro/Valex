@@ -198,9 +198,15 @@ function calculateBalance(cardTransactions: PaymentWithBusinessName[], cardRecha
     return balanceData;
 }
 
-function checkIfCardAreBlocked(isBlocked:boolean){
+function checkIfCardAreUnblocked(isBlocked:boolean){
     if(isBlocked){
         throw { code: "error_cardAlreadyIsBlocked", message: "The card already is blocked" }
+    }
+}
+
+function checkIfCardAreBlocked(isBlocked:boolean){
+    if(!(isBlocked)){
+        throw { code: "error_cardAlreadyIsUnblocked", message: "The card already is unblocked" }
     }
 }
 
@@ -214,6 +220,10 @@ function checkPasswordValidity(receivedPassword: string, cardPassword: string){
 
 async function blockCard(cardId:number){
     const result = await update(cardId, {isBlocked: true});
+}
+
+async function unblockCard(cardId:number){
+    const result = await update(cardId, {isBlocked: false});
 }
 
 const cardServices = {
@@ -231,9 +241,11 @@ const cardServices = {
     getCardTransactions,
     getCardRecharges,
     calculateBalance,
-    checkIfCardAreBlocked,
+    checkIfCardAreUnblocked,
     checkPasswordValidity,
-    blockCard
+    blockCard,
+    checkIfCardAreBlocked,
+    unblockCard
 }
 
 export default cardServices;
