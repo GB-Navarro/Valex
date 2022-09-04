@@ -1,6 +1,6 @@
-import { RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
 
-const exampleMiddleware: RequestHandler = (req,res,next) => {
+async function exampleMiddleware(req: Request, res: Response, next: NextFunction){
     next();
 }
 
