@@ -1,7 +1,8 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
-import { findById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert } from "./../repositories/cardRepository.js";
+import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
+import { Card } from "./../repositories/cardRepository";
 
 import dayjs from "dayjs";
 import Cryptr from "cryptr";
@@ -26,7 +27,7 @@ async function checkApiKeyOwnerExistence(apiKey: string){
 }
 
 async function checkEmployeeExistence(id: number){
-    const result = await findById(id);
+    const result = await findEmployeeById(id);
 
     let employeeExists:boolean;
 
@@ -57,7 +58,7 @@ async function checkEmployeeCardTypeExistence(type: TransactionTypes, employeeId
 async function generateCard(employeeId: number, cardType: string){
 
     const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
-    const employeeName: string = (await findById(employeeId)).fullName;
+    const employeeName: string = (await findEmployeeById(employeeId)).fullName;
 
     const cardNumber: string = faker.finance.creditCardNumber();
     const cardName: string = generateCardName(employeeName);
@@ -108,12 +109,21 @@ async function createCard(cardData: any){
     const result: void = await insert(cardData);
 }
 
+async function checkCardExistence(cardId: number){
+    const result: Card = await findCardById(cardId);
+
+    if(result === undefined){
+         throw { code: "error_cardDoesNotExist", message: "There is no card with this id" };
+    }
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
     checkEmployeeCardTypeExistence,
     generateCard,
-    createCard
+    createCard,
+    checkCardExistence
 }
 
 export default cardServices;
