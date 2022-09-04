@@ -154,13 +154,13 @@ function checkCardSecurityCode(receivedSecurityCode:string, encryptedRealSecurit
     }
 }
 
-function checkReceivedPasswordValidity(cardPassword: string){
+function checkReceivedPasswordFormatValidity(cardPassword: string){
 
     const regex = /^[0-9]{4}$/;
     const isPasswordValid: boolean = regex.test(cardPassword);
 
     if(!(isPasswordValid)){
-        throw { code: "error_cardPasswordIsNotValid", message: "The card password must be composed of 4 numbers" }
+        throw { code: "error_cardPasswordFormatIsNotValid", message: "The card password must be composed of 4 numbers" }
     }
 }
 
@@ -198,6 +198,24 @@ function calculateBalance(cardTransactions: PaymentWithBusinessName[], cardRecha
     return balanceData;
 }
 
+function checkIfCardAreBlocked(isBlocked:boolean){
+    if(isBlocked){
+        throw { code: "error_cardAlreadyIsBlocked", message: "The card already is blocked" }
+    }
+}
+
+function checkPasswordValidity(receivedPassword: string, cardPassword: string){
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
+    const decryptedPassword = cryptr.decrypt(cardPassword);
+    if(decryptedPassword != receivedPassword){
+        throw { code: "error_invalidPassword", message: "The card password is incorrect!" }
+    }
+}
+
+async function blockCard(cardId:number){
+    const result = await update(cardId, {isBlocked: true});
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -208,11 +226,14 @@ const cardServices = {
     checkCardExpirationDate,
     checkIfCardHasAlreadyBeenActivated,
     checkCardSecurityCode,
-    checkReceivedPasswordValidity,
+    checkReceivedPasswordFormatValidity,
     activateCard,
     getCardTransactions,
     getCardRecharges,
-    calculateBalance
+    calculateBalance,
+    checkIfCardAreBlocked,
+    checkPasswordValidity,
+    blockCard
 }
 
 export default cardServices;
