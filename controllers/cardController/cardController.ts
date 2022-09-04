@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import cardServices from "../../services/cardServices.js";
 
-export default async function cardController (req: Request,res: Response){
+async function createCard (req: Request, res: Response){
 
     const {employeeId, cardType} = req.body;
 
@@ -17,3 +17,14 @@ export default async function cardController (req: Request,res: Response){
 
     res.sendStatus(201);
 }
+
+async function activateCard(req: Request, res: Response){
+    res.status(200).send("Hello World");
+}
+
+const cardController = {
+    createCard,
+    activateCard
+}
+
+export default cardController;
