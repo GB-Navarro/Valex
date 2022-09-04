@@ -1,6 +1,6 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes } from "./../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
 
 import dayjs from "dayjs";
@@ -61,14 +61,16 @@ async function generateCard(employeeId: number, cardType: string){
     const cardName: string = generateCardName(employeeName);
     const cardExpirationDate: string = dayjs().add(5,'year').format('MM/YY');
     const cardCVV: string = faker.finance.creditCardCVV();
-    const encryptedCVV = cryptr.encrypt(cardCVV);
+    const encryptedCVV: string = cryptr.encrypt(cardCVV);
 
-    const card = {
+    const card: any = {
         employeeId: employeeId,
         number: cardNumber,
         cardholderName: cardName,
         securityCode: encryptedCVV,
         expirationDate: cardExpirationDate,
+        isVirtual: false,
+        isBlocked: true,
         type: cardType
     }
 
@@ -100,11 +102,25 @@ function generateCardName(employeeName:string){
     }
 }
 
+async function createCard(cardData: any){
+    let isDataInserted:boolean;
+    try{
+        const promisse: void = await insert(cardData);
+        isDataInserted = true;
+        return isDataInserted
+    }catch(error){
+        console.log(error);
+        isDataInserted = false;
+        return isDataInserted;
+    }
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
     checkEmployeeCardTypeExistence,
-    generateCard
+    generateCard,
+    createCard
 }
 
 export default cardServices;
