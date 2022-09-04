@@ -111,9 +111,29 @@ async function createCard(cardData: any){
 
 async function checkCardExistence(cardId: number){
     const result: Card = await findCardById(cardId);
-
     if(result === undefined){
          throw { code: "error_cardDoesNotExist", message: "There is no card with this id" };
+    }
+}
+
+async function checkCardExpirationDate(cardId: number){
+
+    const result: Card = await findCardById(cardId);
+
+    const expirationDate = result.expirationDate;
+    const expirationMonth = expirationDate[0] + expirationDate[1];
+    const expirationYear = expirationDate[3] + expirationDate[4];
+
+    const now = dayjs().format('MM/YY');
+    const nowMonth = now[0] + now[1];
+    const nowYear = now[3] + now[4];
+
+    if((parseInt(expirationYear) - parseInt(nowYear)) > 5 ){
+        throw { code: "error_cardExpired", message: "Card validity has expired!" };
+    }else if((parseInt(expirationYear) - parseInt(nowYear)) === 5 ){
+        if((parseInt(expirationMonth) - parseInt(nowMonth)) > 0 ){
+            throw { code: "error_cardExpired", message: "Card validity has expired!" };
+        }
     }
 }
 
@@ -123,7 +143,8 @@ const cardServices = {
     checkEmployeeCardTypeExistence,
     generateCard,
     createCard,
-    checkCardExistence
+    checkCardExistence,
+    checkCardExpirationDate
 }
 
 export default cardServices;

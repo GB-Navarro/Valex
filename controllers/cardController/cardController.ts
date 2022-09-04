@@ -21,6 +21,7 @@ async function createCard (req: Request, res: Response){
 async function activateCard(req: Request, res: Response){
     const {cardId, cardCVC, cardPassword} = req.body
     await cardServices.checkCardExistence(cardId);
+    await cardServices.checkCardExpirationDate(cardId);
     res.status(200).send("Hello World");
 }
 
