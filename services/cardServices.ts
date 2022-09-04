@@ -1,6 +1,8 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
+import { findByCardId as findTransactionsByCardId, PaymentWithBusinessName } from "../repositories/paymentRepository.js";
+import { findByCardId as findRechargesByCardId, Recharge } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -168,6 +170,34 @@ async function activateCard(cardId:number, cardPassword: string){
     const result = await update(cardId, {password: encryptedCardPassword});
 }
 
+async function getCardTransactions(cardId: number){
+    const result = await findTransactionsByCardId(cardId);
+    return result;
+}
+
+async function getCardRecharges(cardId: number){
+    const result = await findRechargesByCardId(cardId);
+    return result;
+}
+
+function calculateBalance(cardTransactions: PaymentWithBusinessName[], cardRecharges: Recharge[]){
+    let cardRechargesBalance: number = 0;
+    cardRecharges.forEach((cardRecharges) => {
+        cardRechargesBalance += cardRecharges.amount;
+    })
+    let cardTransactionsBalance: number = 0;
+    cardTransactions.forEach((cardTransaction) => {
+        cardTransactionsBalance += cardTransaction.amount;
+    })
+    const balance = cardRechargesBalance - cardTransactionsBalance;
+    const balanceData = {
+        balance: balance,
+        transactions: cardTransactions,
+        recharges: cardRecharges
+    }
+    return balanceData;
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -179,7 +209,10 @@ const cardServices = {
     checkIfCardHasAlreadyBeenActivated,
     checkCardSecurityCode,
     checkReceivedPasswordValidity,
-    activateCard
+    activateCard,
+    getCardTransactions,
+    getCardRecharges,
+    calculateBalance
 }
 
 export default cardServices;

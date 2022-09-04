@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import cardServices from "../../services/cardServices.js";
 
@@ -26,14 +26,25 @@ async function activateCard(req: Request, res: Response){
     cardServices.checkIfCardHasAlreadyBeenActivated(cardActuallyPassword);
     cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
     cardServices.checkReceivedPasswordValidity(receivedPassword);
-    cardServices.activateCard(cardId, receivedPassword);
+    await cardServices.activateCard(cardId, receivedPassword);
 
     res.status(202).send("The card has been activated!");
 }
 
+async function viewCardBalance(req: Request, res: Response, next: NextFunction){
+    const { cardId } = req.body;
+
+    await cardServices.getCardData(cardId);
+    const cardTransactions = await cardServices.getCardTransactions(cardId);
+    const cardRecharges = await cardServices.getCardRecharges(cardId);
+    const balanceData = cardServices.calculateBalance(cardTransactions, cardRecharges)
+
+    res.status(200).send(balanceData);
+}
 const cardController = {
     createCard,
-    activateCard
+    activateCard,
+    viewCardBalance
 }
 
 export default cardController;

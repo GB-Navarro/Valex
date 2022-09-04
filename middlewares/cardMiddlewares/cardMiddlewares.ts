@@ -44,10 +44,27 @@ function validateActivateCardSchema(req: Request, res: Response, next: NextFunct
     }
 }
 
+function validateViewCardBalanceSchema(req: Request, res: Response, next: NextFunction){
+
+    const data = req.body;
+    const result = cardSchemas.viewCardBalanceSchema.validate(data);
+
+    let isDataValid: boolean;
+
+    if(result.error === undefined){
+        isDataValid = true;
+        next();
+    }else{
+        isDataValid = false;
+        throw { code: "error_dataDontIsValid", message: result.error.message };
+    }
+}
+
 const cardMiddlewares = {
     checkApiKeyExistence,
     validateCreateCardSchema,
-    validateActivateCardSchema
+    validateActivateCardSchema,
+    validateViewCardBalanceSchema
 }
 
 export default cardMiddlewares;
