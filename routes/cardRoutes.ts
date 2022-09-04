@@ -5,6 +5,6 @@ import cardController from "../controllers/cardController/cardController.js";
 
 const cardRouter = Router();
 
-cardRouter.post("/createCard", cardMiddlewares.checkApiKeyExistence, cardController);
+cardRouter.post("/createCard", cardMiddlewares.checkApiKeyExistence, cardMiddlewares.validateCardType, cardController);
 
 export default cardRouter;
