@@ -33,12 +33,15 @@ async function activateCard(req: Request, res: Response){
 
 async function viewCardBalance(req: Request, res: Response, next: NextFunction){
     const { cardId } = req.body;
-    
+
     await cardServices.getCardData(cardId);
     const cardTransactions = await cardServices.getCardTransactions(cardId);
+    console.log(cardTransactions);
     const cardRecharges = await cardServices.getCardRecharges(cardId);
+    console.log(cardRecharges);
+    const balanceData = cardServices.calculateBalance(cardTransactions, cardRecharges)
 
-    res.status(200).send("Hello World!");
+    res.status(200).send(balanceData);
 }
 const cardController = {
     createCard,

@@ -1,8 +1,8 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
-import { findByCardId as findTransactionsByCardId } from "../repositories/paymentRepository.js";
-import { findByCardId as findRechargesByCardId } from "../repositories/rechargeRepository.js";
+import { findByCardId as findTransactionsByCardId, PaymentWithBusinessName } from "../repositories/paymentRepository.js";
+import { findByCardId as findRechargesByCardId, Recharge } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -180,6 +180,24 @@ async function getCardRecharges(cardId: number){
     return result;
 }
 
+function calculateBalance(cardTransactions: PaymentWithBusinessName[], cardRecharges: Recharge[]){
+    let cardRechargesBalance: number = 0;
+    cardRecharges.forEach((cardRecharges) => {
+        cardRechargesBalance += cardRecharges.amount;
+    })
+    let cardTransactionsBalance: number = 0;
+    cardTransactions.forEach((cardTransaction) => {
+        cardTransactionsBalance += cardTransaction.amount;
+    })
+    const balance = cardRechargesBalance - cardTransactionsBalance;
+    const balanceData = {
+        balance: balance,
+        transactions: cardTransactions,
+        recharges: cardRecharges
+    }
+    return balanceData;
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -193,7 +211,8 @@ const cardServices = {
     checkReceivedPasswordValidity,
     activateCard,
     getCardTransactions,
-    getCardRecharges
+    getCardRecharges,
+    calculateBalance
 }
 
 export default cardServices;
