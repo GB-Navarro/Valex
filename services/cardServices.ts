@@ -2,7 +2,13 @@ import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
+
 import dayjs from "dayjs";
+import Cryptr from "cryptr";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 async function checkApiKeyOwnerExistence(apiKey: string){
 
     const result = await findByApiKey(apiKey);
@@ -47,11 +53,26 @@ async function checkEmployeeCardTypeExistence(type: TransactionTypes, employeeId
 }
 
 async function generateCard(employeeId: number, cardType: string){
-    const cardNumber: string = faker.finance.creditCardNumber();
-    const cardCVV: string = faker.finance.creditCardCVV();
+
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
     const employeeName: string = (await findById(employeeId)).fullName;
+
+    const cardNumber: string = faker.finance.creditCardNumber();
     const cardName: string = generateCardName(employeeName);
     const cardExpirationDate: string = dayjs().add(5,'year').format('MM/YY');
+    const cardCVV: string = faker.finance.creditCardCVV();
+    const encryptedCVV = cryptr.encrypt(cardCVV);
+
+    const card = {
+        employeeId: employeeId,
+        number: cardNumber,
+        cardholderName: cardName,
+        securityCode: encryptedCVV,
+        expirationDate: cardExpirationDate,
+        type: cardType
+    }
+
+    return card;
 }
 
 function generateCardName(employeeName:string){
