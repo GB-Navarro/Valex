@@ -1,5 +1,6 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById } from "./../repositories/employeeRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes } from "./../repositories/cardRepository.js";
 
 async function checkApiKeyOwnerExistence(apiKey: string){
 
@@ -30,9 +31,24 @@ async function checkEmployeeExistence(id: number){
     }
 }
 
+async function checkEmployeeCardTypeExistence(type: TransactionTypes, id:number){
+    const result = await findByTypeAndEmployeeId(type,id);
+
+    let employeeCardTypeExists:boolean;
+
+    if(result === undefined){
+        employeeCardTypeExists = true;
+        return employeeCardTypeExists;
+    }else{
+        employeeCardTypeExists = false;
+        return employeeCardTypeExists;
+    }
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
-    checkEmployeeExistence
+    checkEmployeeExistence,
+    checkEmployeeCardTypeExistence
 }
 
 export default cardServices;
