@@ -19,15 +19,16 @@ async function createCard (req: Request, res: Response){
 }
 
 async function activateCard(req: Request, res: Response){
-    const {cardId, cardCVC: receivedSecurityCode, cardPassword} = req.body
-    const { expirationDate, password, securityCode: encryptedRealSecurityCode } = await cardServices.getCardData(cardId);
+    const {cardId, cardCVC: receivedSecurityCode, cardPassword: receivedPassword} = req.body
+    const { expirationDate, password: cardActuallyPassword, securityCode: encryptedRealSecurityCode } = await cardServices.getCardData(cardId);
     
     cardServices.checkCardExpirationDate(expirationDate);
-    cardServices.checkIfCardHasAlreadyBeenActivated(password);
+    cardServices.checkIfCardHasAlreadyBeenActivated(cardActuallyPassword);
     cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
-    cardServices.checkCardPasswordValidity(cardPassword);
+    cardServices.checkReceivedPasswordValidity(receivedPassword);
+    cardServices.activateCard(cardId, receivedPassword);
 
-    res.status(200).send("Hello World");
+    res.status(202).send("The card has been activated!");
 }
 
 const cardController = {

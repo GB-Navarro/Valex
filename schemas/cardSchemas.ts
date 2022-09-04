@@ -8,7 +8,7 @@ const createCardSchema = Joi.object({
 const activateCardSchema = Joi.object({
     cardId: Joi.number().greater(0).required(),
     cardCVC: Joi.string().min(3).required(),
-    cardPassword: Joi.string().required()
+    cardPassword: Joi.string().min(1).required()
 })
 
 const cardSchemas = {

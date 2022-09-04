@@ -1,6 +1,6 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById } from "./../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -152,14 +152,20 @@ function checkCardSecurityCode(receivedSecurityCode:string, encryptedRealSecurit
     }
 }
 
-function checkCardPasswordValidity(cardPassword: string){
-    
+function checkReceivedPasswordValidity(cardPassword: string){
+
     const regex = /^[0-9]{4}$/;
     const isPasswordValid: boolean = regex.test(cardPassword);
 
     if(!(isPasswordValid)){
         throw { code: "error_cardPasswordIsNotValid", message: "The card password must be composed of 4 numbers" }
     }
+}
+
+async function activateCard(cardId:number, cardPassword: string){
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
+    const encryptedCardPassword: any = cryptr.encrypt(cardPassword);
+    const result = await update(cardId, {password: encryptedCardPassword});
 }
 
 const cardServices = {
@@ -172,7 +178,8 @@ const cardServices = {
     checkCardExpirationDate,
     checkIfCardHasAlreadyBeenActivated,
     checkCardSecurityCode,
-    checkCardPasswordValidity
+    checkReceivedPasswordValidity,
+    activateCard
 }
 
 export default cardServices;
