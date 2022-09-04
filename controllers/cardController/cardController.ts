@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import cardServices from "../../services/cardServices.js";
 
-export default async function cardController (req: Request,res: Response){
+async function createCard (req: Request, res: Response){
 
     const {employeeId, cardType} = req.body;
 
@@ -17,3 +17,23 @@ export default async function cardController (req: Request,res: Response){
 
     res.sendStatus(201);
 }
+
+async function activateCard(req: Request, res: Response){
+    const {cardId, cardCVC: receivedSecurityCode, cardPassword: receivedPassword} = req.body
+    const { expirationDate, password: cardActuallyPassword, securityCode: encryptedRealSecurityCode } = await cardServices.getCardData(cardId);
+    
+    cardServices.checkCardExpirationDate(expirationDate);
+    cardServices.checkIfCardHasAlreadyBeenActivated(cardActuallyPassword);
+    cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
+    cardServices.checkReceivedPasswordValidity(receivedPassword);
+    cardServices.activateCard(cardId, receivedPassword);
+
+    res.status(202).send("The card has been activated!");
+}
+
+const cardController = {
+    createCard,
+    activateCard
+}
+
+export default cardController;

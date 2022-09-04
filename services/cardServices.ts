@@ -1,7 +1,8 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
-import { findById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert } from "./../repositories/cardRepository.js";
+import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
+import { Card } from "./../repositories/cardRepository";
 
 import dayjs from "dayjs";
 import Cryptr from "cryptr";
@@ -26,7 +27,7 @@ async function checkApiKeyOwnerExistence(apiKey: string){
 }
 
 async function checkEmployeeExistence(id: number){
-    const result = await findById(id);
+    const result = await findEmployeeById(id);
 
     let employeeExists:boolean;
 
@@ -57,7 +58,7 @@ async function checkEmployeeCardTypeExistence(type: TransactionTypes, employeeId
 async function generateCard(employeeId: number, cardType: string){
 
     const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
-    const employeeName: string = (await findById(employeeId)).fullName;
+    const employeeName: string = (await findEmployeeById(employeeId)).fullName;
 
     const cardNumber: string = faker.finance.creditCardNumber();
     const cardName: string = generateCardName(employeeName);
@@ -108,12 +109,77 @@ async function createCard(cardData: any){
     const result: void = await insert(cardData);
 }
 
+async function getCardData(cardId: number){
+    const cardData: Card = await findCardById(cardId);
+
+    if(cardData === undefined){
+        throw { code: "error_cardDoesNotExist", message: "There is no card with this id" };
+    }else{
+        return cardData;
+    }
+}
+
+function checkCardExpirationDate(expirationDate: string){
+
+    const expirationMonth = expirationDate[0] + expirationDate[1];
+    const expirationYear = expirationDate[3] + expirationDate[4];
+
+    const now = dayjs().format('MM/YY');
+    const nowMonth = now[0] + now[1];
+    const nowYear = now[3] + now[4];
+
+    if((parseInt(expirationYear) - parseInt(nowYear)) > 5 ){
+        throw { code: "error_cardExpired", message: "Card validity has expired!" };
+    }else if((parseInt(expirationYear) - parseInt(nowYear)) === 5 ){
+        if((parseInt(expirationMonth) - parseInt(nowMonth)) > 0 ){
+            throw { code: "error_cardExpired", message: "Card validity has expired!" };
+        }
+    }
+}
+
+function checkIfCardHasAlreadyBeenActivated(password: string){
+    if(password != null){
+        throw { code: "error_cardHasAlreadyBeenActivated", message: "This card has already been activated!" };
+    }
+}
+
+function checkCardSecurityCode(receivedSecurityCode:string, encryptedRealSecurityCode:string){
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
+    const decryptedRealSecurityCode:string = cryptr.decrypt(encryptedRealSecurityCode);
+
+    if(receivedSecurityCode != decryptedRealSecurityCode){
+        throw { code: "error_cardSecurityCodeIsInvalid", message: "The card security code is invalid!" }
+    }
+}
+
+function checkReceivedPasswordValidity(cardPassword: string){
+
+    const regex = /^[0-9]{4}$/;
+    const isPasswordValid: boolean = regex.test(cardPassword);
+
+    if(!(isPasswordValid)){
+        throw { code: "error_cardPasswordIsNotValid", message: "The card password must be composed of 4 numbers" }
+    }
+}
+
+async function activateCard(cardId:number, cardPassword: string){
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
+    const encryptedCardPassword: any = cryptr.encrypt(cardPassword);
+    const result = await update(cardId, {password: encryptedCardPassword});
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
     checkEmployeeCardTypeExistence,
     generateCard,
-    createCard
+    createCard,
+    getCardData,
+    checkCardExpirationDate,
+    checkIfCardHasAlreadyBeenActivated,
+    checkCardSecurityCode,
+    checkReceivedPasswordValidity,
+    activateCard
 }
 
 export default cardServices;
