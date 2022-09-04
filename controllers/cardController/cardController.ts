@@ -41,10 +41,16 @@ async function viewCardBalance(req: Request, res: Response, next: NextFunction){
 
     res.status(200).send(balanceData);
 }
+
+async function blockCard(req: Request, res: Response, next: NextFunction){
+    res.status(200).send("Hello World!");
+}
+
 const cardController = {
     createCard,
     activateCard,
-    viewCardBalance
+    viewCardBalance,
+    blockCard
 }
 
 export default cardController;
