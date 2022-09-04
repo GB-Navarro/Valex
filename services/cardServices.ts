@@ -2,6 +2,7 @@ import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes } from "./../repositories/cardRepository.js";
 import { faker } from "@faker-js/faker"
+import dayjs from "dayjs";
 async function checkApiKeyOwnerExistence(apiKey: string){
 
     const result = await findByApiKey(apiKey);
@@ -46,10 +47,11 @@ async function checkEmployeeCardTypeExistence(type: TransactionTypes, employeeId
 }
 
 async function generateCard(employeeId: number, cardType: string){
-    const cardNumber: string = faker.finance.account()
-    const employeeName: any = (await findById(employeeId)).fullName;
+    const cardNumber: string = faker.finance.creditCardNumber();
+    const cardCVV: string = faker.finance.creditCardCVV();
+    const employeeName: string = (await findById(employeeId)).fullName;
     const cardName: string = generateCardName(employeeName);
-    console.log(cardName);
+    const cardExpirationDate: string = dayjs().add(5,'year').format('MM/YY');
 }
 
 function generateCardName(employeeName:string){
