@@ -19,6 +19,7 @@ async function createCard (req: Request, res: Response){
 }
 
 async function activateCard(req: Request, res: Response){
+    const {cardId, cardCVC, cardPassword} = req.body
     res.status(200).send("Hello World");
 }
 
