@@ -17,7 +17,8 @@ async function checkApiKeyOwnerExistence(apiKey: string){
 
     if(result === undefined){
         apiKeyOwnerExists = false;
-        return apiKeyOwnerExists;
+        throw { code: "error_apiKeyHasNoOwner", message: "API key must have an owner!" };
+        
     }else{
         apiKeyOwnerExists = true;
         return apiKeyOwnerExists;
@@ -31,7 +32,7 @@ async function checkEmployeeExistence(id: number){
 
     if(result === undefined){
         employeeExists = false;
-        return employeeExists;
+        throw { code: "error_employeeDontExist", message: "There is no employee with that id." };
     }else{
         employeeExists = true;
         return employeeExists;
@@ -48,7 +49,8 @@ async function checkEmployeeCardTypeExistence(type: TransactionTypes, employeeId
         return employeeCardTypeExists;
     }else{
         employeeCardTypeExists = true;
-        return employeeCardTypeExists;
+        throw { code: "error_employeeAlreadyHasThisTypeOfCard", message: "An employee cannot have two cards of the same type!" };
+        
     }
 }
 
@@ -103,16 +105,7 @@ function generateCardName(employeeName:string){
 }
 
 async function createCard(cardData: any){
-    let isDataInserted:boolean;
-    try{
-        const promisse: void = await insert(cardData);
-        isDataInserted = true;
-        return isDataInserted
-    }catch(error){
-        console.log(error);
-        isDataInserted = false;
-        return isDataInserted;
-    }
+    const result: void = await insert(cardData);
 }
 
 const cardServices = {
