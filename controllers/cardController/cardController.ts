@@ -36,9 +36,7 @@ async function viewCardBalance(req: Request, res: Response, next: NextFunction){
 
     await cardServices.getCardData(cardId);
     const cardTransactions = await cardServices.getCardTransactions(cardId);
-    console.log(cardTransactions);
     const cardRecharges = await cardServices.getCardRecharges(cardId);
-    console.log(cardRecharges);
     const balanceData = cardServices.calculateBalance(cardTransactions, cardRecharges)
 
     res.status(200).send(balanceData);
