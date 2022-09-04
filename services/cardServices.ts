@@ -109,18 +109,18 @@ async function createCard(cardData: any){
     const result: void = await insert(cardData);
 }
 
-async function checkCardExistence(cardId: number){
-    const result: Card = await findCardById(cardId);
-    if(result === undefined){
-         throw { code: "error_cardDoesNotExist", message: "There is no card with this id" };
+async function getCardData(cardId: number){
+    const cardData: Card = await findCardById(cardId);
+
+    if(cardData === undefined){
+        throw { code: "error_cardDoesNotExist", message: "There is no card with this id" };
+    }else{
+        return cardData;
     }
 }
 
-async function checkCardExpirationDate(cardId: number){
+function checkCardExpirationDate(expirationDate: string){
 
-    const result: Card = await findCardById(cardId);
-
-    const expirationDate = result.expirationDate;
     const expirationMonth = expirationDate[0] + expirationDate[1];
     const expirationYear = expirationDate[3] + expirationDate[4];
 
@@ -137,14 +137,31 @@ async function checkCardExpirationDate(cardId: number){
     }
 }
 
+function checkIfCardHasAlreadyBeenActivated(password: string){
+    if(password != null){
+        throw { code: "error_cardHasAlreadyBeenActivated", message: "This card has already been activated!" };
+    }
+}
+
+function checkCardSecurityCode(receivedSecurityCode:string, encryptedRealSecurityCode:string){
+    const cryptr = new Cryptr(process.env.ENCRYPT_KEY);
+    const decryptedRealSecurityCode:string = cryptr.decrypt(encryptedRealSecurityCode);
+
+    if(receivedSecurityCode != decryptedRealSecurityCode){
+        throw { code: "error_cardSecurityCodeIsInvalid", message: "The card security code is invalid!" }
+    }
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
     checkEmployeeCardTypeExistence,
     generateCard,
     createCard,
-    checkCardExistence,
-    checkCardExpirationDate
+    getCardData,
+    checkCardExpirationDate,
+    checkIfCardHasAlreadyBeenActivated,
+    checkCardSecurityCode
 }
 
 export default cardServices;
