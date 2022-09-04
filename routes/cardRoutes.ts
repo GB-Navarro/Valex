@@ -9,4 +9,6 @@ cardRouter.post("/createCard", cardMiddlewares.checkApiKeyExistence, cardMiddlew
 cardRouter.post("/activateCard", cardMiddlewares.validateActivateCardSchema, cardController.activateCard);
 cardRouter.get("/viewCardBalance", cardMiddlewares.validateViewCardBalanceSchema ,cardController.viewCardBalance);
 cardRouter.post("/blockCard", cardMiddlewares.validateBlockCardSchema, cardController.blockCard);
+cardRouter.post("/unblockCard", cardMiddlewares.validateBlockCardSchema, cardController.unblockCard);
+
 export default cardRouter;
