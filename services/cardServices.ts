@@ -2,6 +2,7 @@ import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
 import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
 import { findByCardId as findTransactionsByCardId } from "../repositories/paymentRepository.js";
+import { findByCardId as findRechargesByCardId } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -171,12 +172,12 @@ async function activateCard(cardId:number, cardPassword: string){
 
 async function getCardTransactions(cardId: number){
     const result = await findTransactionsByCardId(cardId);
-    if(result.length === 0){
-        throw { code: "error_cardDoesNotHaveTransactions", message: "This card does not have transactions" }
-    }else{
-        return result;
-    }
+    return result;
+}
 
+async function getCardRecharges(cardId: number){
+    const result = await findRechargesByCardId(cardId);
+    return result;
 }
 
 const cardServices = {
@@ -191,7 +192,8 @@ const cardServices = {
     checkCardSecurityCode,
     checkReceivedPasswordValidity,
     activateCard,
-    getCardTransactions
+    getCardTransactions,
+    getCardRecharges
 }
 
 export default cardServices;

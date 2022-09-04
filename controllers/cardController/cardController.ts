@@ -33,8 +33,11 @@ async function activateCard(req: Request, res: Response){
 
 async function viewCardBalance(req: Request, res: Response, next: NextFunction){
     const { cardId } = req.body;
+    
     await cardServices.getCardData(cardId);
-    await cardServices.getCardTransactions(cardId);
+    const cardTransactions = await cardServices.getCardTransactions(cardId);
+    const cardRecharges = await cardServices.getCardRecharges(cardId);
+
     res.status(200).send("Hello World!");
 }
 const cardController = {
