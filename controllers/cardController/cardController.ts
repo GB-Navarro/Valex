@@ -25,7 +25,7 @@ async function activateCard(req: Request, res: Response){
     cardServices.checkCardExpirationDate(expirationDate);
     cardServices.checkIfCardHasAlreadyBeenActivated(cardActuallyPassword);
     cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
-    cardServices.checkReceivedPasswordValidity(receivedPassword);
+    cardServices.checkReceivedPasswordFormatValidity(receivedPassword);
     await cardServices.activateCard(cardId, receivedPassword);
 
     res.status(202).send("The card has been activated!");
@@ -41,10 +41,22 @@ async function viewCardBalance(req: Request, res: Response, next: NextFunction){
 
     res.status(200).send(balanceData);
 }
+
+async function blockCard(req: Request, res: Response, next: NextFunction){
+    const { cardId, cardPassword:ReceivedPassword } = req.body;
+    const { expirationDate, isBlocked:cardIsBlocked, password:cardPassword } = await cardServices.getCardData(cardId);
+    cardServices.checkCardExpirationDate(expirationDate);
+    cardServices.checkIfCardAreBlocked(cardIsBlocked);
+    cardServices.checkPasswordValidity(ReceivedPassword, cardPassword);
+    await cardServices.blockCard(cardId);
+    res.status(200).send("The card has been blocked");
+}
+
 const cardController = {
     createCard,
     activateCard,
-    viewCardBalance
+    viewCardBalance,
+    blockCard
 }
 
 export default cardController;
