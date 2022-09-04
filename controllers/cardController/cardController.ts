@@ -11,7 +11,8 @@ export default async function cardController (req: Request,res: Response){
         const employeeExists = await cardServices.checkEmployeeExistence(employeeId);
         if(employeeExists){
             const employeeCardTypeExists = await cardServices.checkEmployeeCardTypeExistence(cardType, employeeId);
-            if(employeeCardTypeExists){
+            if(!(employeeCardTypeExists)){
+                cardServices.generateCard(employeeId, cardType);
                 res.status(200).send("O cartão pode ser criado!");
             }else{
                 res.sendStatus(404);
