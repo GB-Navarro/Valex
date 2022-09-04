@@ -14,15 +14,12 @@ export default async function cardController (req: Request,res: Response){
             if(employeeCardTypeExists){
                 res.status(200).send("O cartão pode ser criado!");
             }else{
-                console.log("erro3");
                 res.sendStatus(404);
             }
         }else{
-            console.log("erro2");
             res.sendStatus(404);
         }
     }else{
-        console.log("erro1");
         res.sendStatus(404);
     }
     

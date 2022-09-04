@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
+import cardSchemas from "../../schemas/cardSchemas.js";
 function checkApiKeyExistence(req: Request, res: Response, next: NextFunction){
     
     const apiKey = req.headers.apikey;
@@ -11,27 +11,26 @@ function checkApiKeyExistence(req: Request, res: Response, next: NextFunction){
     }
 }
 
-function validateCardType(req: Request, res: Response, next: NextFunction){
+function validateCreateCardSchema(req: Request, res: Response, next: NextFunction){
 
-    const cardTypes = ["groceries","restaurant","transport","education","health"];
-    const { cardType } = req.body;
-    const result = cardTypes.find((element) => element === cardType);
+    const data = req.body;
+    const result = cardSchemas.createCardSchema.validate(data);
 
-    let isCardTypeValid:boolean;
+    let isDataValid:boolean;
 
-    if(result != undefined){
-        isCardTypeValid = true;
+    if(result.error === undefined){
+        isDataValid = true;
         next();
     }else{
-        isCardTypeValid = false;
+        isDataValid = false;
+        console.log(result);
         res.sendStatus(404);
     }
-
 }
 
 const cardMiddlewares = {
     checkApiKeyExistence,
-    validateCardType
+    validateCreateCardSchema
 }
 
 export default cardMiddlewares;
