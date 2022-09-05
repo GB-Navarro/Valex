@@ -226,6 +226,10 @@ async function unblockCard(cardId:number){
     const result = await update(cardId, {isBlocked: false});
 }
 
+async function validateRechargeValue(amount: number){
+
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
