@@ -241,7 +241,6 @@ async function insertCardRecharge(cardId: number, amount: number){
 }
 
 async function getCardBalance(cardId:number){
-    console.log("foi");
     const result = await getCardRechargesAndPayments(cardId);
     if(result === undefined){
         throw { code: "error_unchargedCard", message: "This card never been recharged" }
@@ -252,7 +251,7 @@ async function getCardBalance(cardId:number){
         if(cardPayments === undefined){
             cardPayments = 0;
         }
-        
+
         const cardBalance = (cardRecharges - cardPayments)
         return cardBalance;
     }   
