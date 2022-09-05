@@ -62,12 +62,17 @@ async function unblockCard(req: Request, res: Response){
     res.status(200).send("The card has been unblocked");
 }
 
+async function rechargeCard(req: Request, res: Response){
+    res.status(200).send("Hello World!");
+}
+
 const cardController = {
     createCard,
     activateCard,
     viewCardBalance,
     blockCard,
-    unblockCard
+    unblockCard,
+    rechargeCard
 }
 
 export default cardController;

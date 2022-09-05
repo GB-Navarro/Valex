@@ -11,7 +11,7 @@ const activateCardSchema = Joi.object({
     cardPassword: Joi.string().min(1).required()
 });
 
-const viewCardBalanceSchema = Joi.object({
+const cardIdSchema = Joi.object({
     cardId:Joi. number().greater(0).required()
 });
 
@@ -23,7 +23,7 @@ const blockCardSchema = Joi.object({
 const cardSchemas = {
     createCardSchema,
     activateCardSchema,
-    viewCardBalanceSchema,
+    cardIdSchema,
     blockCardSchema
 };
 

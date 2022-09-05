@@ -44,10 +44,10 @@ function validateActivateCardSchema(req: Request, res: Response, next: NextFunct
     }
 }
 
-function validateViewCardBalanceSchema(req: Request, res: Response, next: NextFunction){
+function validateCardIdSchema(req: Request, res: Response, next: NextFunction){
 
     const data = req.body;
-    const result = cardSchemas.viewCardBalanceSchema.validate(data);
+    const result = cardSchemas.cardIdSchema.validate(data);
 
     let isDataValid: boolean;
 
@@ -80,7 +80,7 @@ const cardMiddlewares = {
     checkApiKeyExistence,
     validateCreateCardSchema,
     validateActivateCardSchema,
-    validateViewCardBalanceSchema,
+    validateCardIdSchema,
     validateBlockCardSchema
 }
 
