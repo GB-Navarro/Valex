@@ -4,6 +4,8 @@ async function searchABusiness(companyId: number){
     const result = await findBusinessById(companyId);
     if(result === undefined){
         throw { code: "error_businessIsNotRegistered", message: "Do not exist a business with that id!" };
+    }else{
+        return result;
     }
 }
 
