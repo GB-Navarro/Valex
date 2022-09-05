@@ -23,7 +23,7 @@ async function activateCard(req: Request, res: Response){
     const { expirationDate, password: cardActuallyPassword, securityCode: encryptedRealSecurityCode } = await cardServices.getCardData(cardId);
     
     cardServices.checkCardExpirationDate(expirationDate);
-    cardServices.checkIfCardHasAlreadyBeenActivated(cardActuallyPassword);
+    cardServices.checkIfCardIsInactive(cardActuallyPassword);
     cardServices.checkCardSecurityCode(receivedSecurityCode, encryptedRealSecurityCode);
     cardServices.checkReceivedPasswordFormatValidity(receivedPassword);
     await cardServices.activateCard(cardId, receivedPassword);

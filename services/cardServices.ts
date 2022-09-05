@@ -1,6 +1,6 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert as insertCard, findById as findCardById, update } from "./../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert as insertCard, findById as findCardById, update, getCardRechargesAndPayments } from "./../repositories/cardRepository.js";
 import { findByCardId as findTransactionsByCardId, PaymentWithBusinessName } from "../repositories/paymentRepository.js";
 import { findByCardId as findRechargesByCardId, Recharge, insert as insertRecharge, RechargeInsertData } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
@@ -139,7 +139,13 @@ function checkCardExpirationDate(expirationDate: string){
     }
 }
 
-function checkIfCardHasAlreadyBeenActivated(password: string){
+function checkIfCardIsActive(password: string){
+    if(password === null){
+        throw { code: "error_cardIsInactive", message: "This card is inactive!" };
+    }
+}
+
+function checkIfCardIsInactive(password: string){
     if(password != null){
         throw { code: "error_cardHasAlreadyBeenActivated", message: "This card has already been activated!" };
     }
@@ -234,6 +240,23 @@ async function insertCardRecharge(cardId: number, amount: number){
     const result = await insertRecharge(rechargeData);
 }
 
+async function getCardBalance(cardId:number){
+    const result = await getCardRechargesAndPayments(cardId);
+    if(result === undefined){
+        throw { code: "error_unchargedCard", message: "This card never been recharged" }
+    }else{
+        let { payments: cardPayments } = result;
+        const { recharges: cardRecharges } = result
+
+        if(cardPayments === undefined){
+            cardPayments = 0;
+        }
+
+        const cardBalance = (cardRecharges - cardPayments)
+        return cardBalance;
+    }   
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -242,7 +265,8 @@ const cardServices = {
     createCard,
     getCardData,
     checkCardExpirationDate,
-    checkIfCardHasAlreadyBeenActivated,
+    checkIfCardIsActive,
+    checkIfCardIsInactive,
     checkCardSecurityCode,
     checkReceivedPasswordFormatValidity,
     activateCard,
@@ -254,7 +278,8 @@ const cardServices = {
     blockCard,
     checkIfCardAreBlocked,
     unblockCard,
-    insertCardRecharge
+    insertCardRecharge,
+    getCardBalance
 }
 
 export default cardServices;
