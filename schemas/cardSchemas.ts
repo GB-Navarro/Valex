@@ -22,7 +22,7 @@ const blockCardSchema = Joi.object({
 
 const rechargeCardSchema = Joi.object({
     cardId:Joi.number().greater(0).required(),
-    amount:Joi.number().required()
+    amount:Joi.number().greater(0).required()
 })
 
 const cardSchemas = {

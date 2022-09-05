@@ -226,7 +226,7 @@ async function unblockCard(cardId:number){
     const result = await update(cardId, {isBlocked: false});
 }
 
-async function validateRechargeValue(amount: number){
+async function validateRechargeAmount(amount: number){
 
 }
 
@@ -249,7 +249,8 @@ const cardServices = {
     checkPasswordValidity,
     blockCard,
     checkIfCardAreBlocked,
-    unblockCard
+    unblockCard,
+    validateRechargeAmount
 }
 
 export default cardServices;

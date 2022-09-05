@@ -63,6 +63,8 @@ async function unblockCard(req: Request, res: Response){
 }
 
 async function rechargeCard(req: Request, res: Response){
+    const { cardId, amount } = req.body;
+    cardServices.validateRechargeAmount(amount);
     res.status(200).send("Hello World!");
 }
 
