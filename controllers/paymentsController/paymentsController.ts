@@ -4,18 +4,24 @@ import cardServices from "../../services/cardServices.js";
 import paymentsServices from "../../services/paymentsServices.js"
 
 async function purchaseAtAPointOfSale(req: Request,res: Response){
-    const { cardId, cardPassword: receivedPassword, companieId, amount: paymentValue } = req.body;
+
+    const { cardId, cardPassword: receivedPassword, businessId, amount: paymentValue } = req.body;
     const { isBlocked: isCardBlocked, password:cardPassword, type:cardType } = await cardServices.getCardData(cardId);
+    
     cardServices.checkIfCardIsActive(cardPassword);
     cardServices.checkIfCardAreUnblocked(isCardBlocked);
     cardServices.checkPasswordValidity(receivedPassword, cardPassword);
-    const { id:businessId,name:businessName,type:businessType } = await companiesServices.searchABusiness(companieId);
+    
+    const { type:businessType } = await companiesServices.searchABusiness(businessId);
+    
     paymentsServices.compareCardTypeWithBusinessType(cardType,businessType);
+    
     const cardBalance = await cardServices.getCardBalance(cardId);
+    
     paymentsServices.validatePurchaseBalance(cardBalance, paymentValue);
-    await paymentsServices.insertPayment(cardId, companieId, paymentValue);
+    await paymentsServices.insertPayment(cardId, businessId, paymentValue);
 
-    res.status(200).send("Hello World!");
+    res.sendStatus(200);
 }
 
 const paymentsController = {
