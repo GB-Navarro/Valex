@@ -241,9 +241,21 @@ async function insertCardRecharge(cardId: number, amount: number){
 }
 
 async function getCardBalance(cardId:number){
-    const {recharges: cardRecharges, payments: cardPayments} = await getCardRechargesAndPayments(cardId);
-    const cardBalance = (cardRecharges - cardPayments)
-    return cardBalance;
+    console.log("foi");
+    const result = await getCardRechargesAndPayments(cardId);
+    if(result === undefined){
+        throw { code: "error_unchargedCard", message: "This card never been recharged" }
+    }else{
+        let { payments: cardPayments } = result;
+        const { recharges: cardRecharges } = result
+
+        if(cardPayments === undefined){
+            cardPayments = 0;
+        }
+        
+        const cardBalance = (cardRecharges - cardPayments)
+        return cardBalance;
+    }   
 }
 
 const cardServices = {

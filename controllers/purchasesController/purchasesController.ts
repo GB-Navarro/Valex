@@ -12,6 +12,7 @@ async function purchaseAtAPointOfSale(req: Request,res: Response){
     const { id:businessId,name:businessName,type:businessType } = await companiesServices.searchABusiness(companieId);
     purchasesServices.compareCardTypeWithBusinessType(cardType,businessType);
     const cardBalance = await cardServices.getCardBalance(cardId);
+    
     purchasesServices.validatePurchaseBalance(cardBalance, paymentValue);
 
     res.status(200).send("Hello World!");
