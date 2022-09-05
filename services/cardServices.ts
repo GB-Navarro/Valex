@@ -139,7 +139,13 @@ function checkCardExpirationDate(expirationDate: string){
     }
 }
 
-function checkIfCardHasAlreadyBeenActivated(password: string){
+function checkIfCardIsActive(password: string){
+    if(password === null){
+        throw { code: "error_cardIsInactive", message: "This card is inactive!" };
+    }
+}
+
+function checkIfCardIsInactive(password: string){
     if(password != null){
         throw { code: "error_cardHasAlreadyBeenActivated", message: "This card has already been activated!" };
     }
@@ -242,7 +248,8 @@ const cardServices = {
     createCard,
     getCardData,
     checkCardExpirationDate,
-    checkIfCardHasAlreadyBeenActivated,
+    checkIfCardIsActive,
+    checkIfCardIsInactive,
     checkCardSecurityCode,
     checkReceivedPasswordFormatValidity,
     activateCard,

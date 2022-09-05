@@ -14,3 +14,4 @@ export async function findByApiKey(apiKey: string) {
 
   return result.rows[0];
 }
+
