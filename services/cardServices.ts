@@ -1,6 +1,6 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert as insertCard, findById as findCardById, update } from "./../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert as insertCard, findById as findCardById, update, getCardRechargesAndPayments } from "./../repositories/cardRepository.js";
 import { findByCardId as findTransactionsByCardId, PaymentWithBusinessName } from "../repositories/paymentRepository.js";
 import { findByCardId as findRechargesByCardId, Recharge, insert as insertRecharge, RechargeInsertData } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
@@ -240,6 +240,12 @@ async function insertCardRecharge(cardId: number, amount: number){
     const result = await insertRecharge(rechargeData);
 }
 
+async function getCardBalance(cardId:number){
+    const {recharges: cardRecharges, payments: cardPayments} = await getCardRechargesAndPayments(cardId);
+    const cardBalance = (cardRecharges - cardPayments)
+    return cardBalance;
+}
+
 const cardServices = {
     checkApiKeyOwnerExistence,
     checkEmployeeExistence,
@@ -261,7 +267,8 @@ const cardServices = {
     blockCard,
     checkIfCardAreBlocked,
     unblockCard,
-    insertCardRecharge
+    insertCardRecharge,
+    getCardBalance
 }
 
 export default cardServices;
