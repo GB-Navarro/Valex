@@ -4,8 +4,15 @@ function compareCardTypeWithBusinessType(cardType:string, businessType:string){
     }
 }
 
+function validatePurchaseBalance(cardBalance:number, paymentValue: number){
+    if(paymentValue > cardBalance){
+        throw { code: "error_cardBalanceIsSmallThanPaymentValue", message: "The card balance is small than payment value" };
+    }
+}
+
 const purchasesServices = {
-    compareCardTypeWithBusinessType
+    compareCardTypeWithBusinessType,
+    validatePurchaseBalance
 }
 
 export default purchasesServices;

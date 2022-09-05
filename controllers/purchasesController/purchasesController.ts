@@ -4,7 +4,7 @@ import cardServices from "./../../services/cardServices.js";
 import purchasesServices from "./../../services/purchasesServices.js";
 
 async function purchaseAtAPointOfSale(req: Request,res: Response){
-    const { cardId, cardPassword: receivedPassword, companieId, amount } = req.body;
+    const { cardId, cardPassword: receivedPassword, companieId, amount: paymentValue } = req.body;
     const { isBlocked: isCardBlocked, password:cardPassword, type:cardType } = await cardServices.getCardData(cardId);
     cardServices.checkIfCardIsActive(cardPassword);
     cardServices.checkIfCardAreUnblocked(isCardBlocked);
@@ -12,7 +12,7 @@ async function purchaseAtAPointOfSale(req: Request,res: Response){
     const { id:businessId,name:businessName,type:businessType } = await companiesServices.searchABusiness(companieId);
     purchasesServices.compareCardTypeWithBusinessType(cardType,businessType);
     const cardBalance = await cardServices.getCardBalance(cardId);
-    
+    purchasesServices.validatePurchaseBalance(cardBalance, paymentValue);
 
     res.status(200).send("Hello World!");
 }

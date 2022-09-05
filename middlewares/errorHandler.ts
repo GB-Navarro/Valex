@@ -10,7 +10,7 @@ export default async function errorHandler(error: any, req: Request, res: Respon
     if (error.code === "error_dataDontIsValid") {
         return res.status(400).send({ message: error.message });
     }
-    if (error.code === "error_cardExpired" || error.code === "error_cardSecurityCodeIsInvalid" || error.code === "error_invalidPassword" || error.code === "error_cardIsInactive" || error.code === "error_businessIsNotRegistered" || error.code === "error_cardTypeIsDiferentThanBusinessType") {
+    if (error.code === "error_cardExpired" || error.code === "error_cardSecurityCodeIsInvalid" || error.code === "error_invalidPassword" || error.code === "error_cardIsInactive" || error.code === "error_businessIsNotRegistered" || error.code === "error_cardTypeIsDiferentThanBusinessType" || error.code === "error_cardBalanceIsSmallThanPaymentValue") {
         return res.status(401).send({ message: error.message });
     }
     return res.sendStatus(500);
