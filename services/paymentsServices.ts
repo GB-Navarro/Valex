@@ -1,4 +1,4 @@
-import { insert, PaymentInsertData } from "./../repositories/paymentRepository.js"
+import { insert, PaymentInsertData } from "../repositories/paymentRepository.js"
 
 function compareCardTypeWithBusinessType(cardType:string, businessType:string){
     if(cardType != businessType){
@@ -21,10 +21,10 @@ async function insertPayment(cardId: number, businessId: number, amount: number)
     await insert(paymentData);
 }
 
-const purchasesServices = {
+const paymentsServices = {
     compareCardTypeWithBusinessType,
     validatePurchaseBalance,
     insertPayment
 }
 
-export default purchasesServices;
+export default paymentsServices;

@@ -7,8 +7,8 @@ const purchaseAtPointOfSaleSchema = Joi.object({
     amount: Joi.number().greater(0).required()
 });
 
-const purchasesSchemas = {
+const paymentsSchemas = {
     purchaseAtPointOfSaleSchema
 }
 
-export default purchasesSchemas;
+export default paymentsSchemas;

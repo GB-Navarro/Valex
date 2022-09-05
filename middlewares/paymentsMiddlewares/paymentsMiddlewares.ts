@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
-import purchasesSchemas from "./../../schemas/purchasesSchemas.js";
+import paymentsSchemas from "../../schemas/paymentsSchemas.js";
 
 async function validatePointOfSalePurchaseSchema(req: Request, res: Response, next: NextFunction){
     const data = req.body;
-    const result = purchasesSchemas.purchaseAtPointOfSaleSchema.validate(data);
+    const result = paymentsSchemas.purchaseAtPointOfSaleSchema.validate(data);
 
     let isDataValid:boolean;
 
@@ -17,8 +17,8 @@ async function validatePointOfSalePurchaseSchema(req: Request, res: Response, ne
     }
 }
 
-const purchasesMiddlewares = {
+const paymentsMiddlewares = {
     validatePointOfSalePurchaseSchema
 }
 
-export default purchasesMiddlewares;
+export default paymentsMiddlewares;
