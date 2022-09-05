@@ -44,10 +44,10 @@ function validateActivateCardSchema(req: Request, res: Response, next: NextFunct
     }
 }
 
-function validateViewCardBalanceSchema(req: Request, res: Response, next: NextFunction){
+function validateCardBalanceSchema(req: Request, res: Response, next: NextFunction){
 
     const data = req.body;
-    const result = cardSchemas.viewCardBalanceSchema.validate(data);
+    const result = cardSchemas.cardBalanceSchema.validate(data);
 
     let isDataValid: boolean;
 
@@ -76,12 +76,29 @@ function validateBlockCardSchema(req: Request, res: Response, next: NextFunction
     }
 }
 
+function validateRechargeCardSchema(req: Request, res: Response, next: NextFunction){
+
+    const data = req.body;
+    const result = cardSchemas.rechargeCardSchema.validate(data);
+
+    let isDataValid: boolean;
+
+    if(result.error === undefined){
+        isDataValid = true;
+        next();
+    }else{
+        isDataValid = false;
+        throw { code: "error_dataDontIsValid", message: result.error.message };
+    }
+}
+
 const cardMiddlewares = {
     checkApiKeyExistence,
     validateCreateCardSchema,
     validateActivateCardSchema,
-    validateViewCardBalanceSchema,
-    validateBlockCardSchema
+    validateCardBalanceSchema,
+    validateBlockCardSchema,
+    validateRechargeCardSchema
 }
 
 export default cardMiddlewares;

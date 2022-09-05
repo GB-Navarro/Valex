@@ -1,8 +1,8 @@
 import { findByApiKey } from "./../repositories/companyRepository.js"
 import { findById as findEmployeeById } from "./../repositories/employeeRepository.js";
-import { findByTypeAndEmployeeId, TransactionTypes, insert, findById as findCardById, update } from "./../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, insert as insertCard, findById as findCardById, update } from "./../repositories/cardRepository.js";
 import { findByCardId as findTransactionsByCardId, PaymentWithBusinessName } from "../repositories/paymentRepository.js";
-import { findByCardId as findRechargesByCardId, Recharge } from "../repositories/rechargeRepository.js";
+import { findByCardId as findRechargesByCardId, Recharge, insert as insertRecharge, RechargeInsertData } from "../repositories/rechargeRepository.js";
 import { faker } from "@faker-js/faker"
 import { Card } from "./../repositories/cardRepository";
 
@@ -108,7 +108,7 @@ function generateCardName(employeeName:string){
 }
 
 async function createCard(cardData: any){
-    const result: void = await insert(cardData);
+    const result: void = await insertCard(cardData);
 }
 
 async function getCardData(cardId: number){
@@ -200,13 +200,13 @@ function calculateBalance(cardTransactions: PaymentWithBusinessName[], cardRecha
 
 function checkIfCardAreUnblocked(isBlocked:boolean){
     if(isBlocked){
-        throw { code: "error_cardAlreadyIsBlocked", message: "The card already is blocked" }
+        throw { code: "error_cardAlreadyIsBlocked", message: "The card is blocked" }
     }
 }
 
 function checkIfCardAreBlocked(isBlocked:boolean){
     if(!(isBlocked)){
-        throw { code: "error_cardAlreadyIsUnblocked", message: "The card already is unblocked" }
+        throw { code: "error_cardAlreadyIsUnblocked", message: "The card is unblocked" }
     }
 }
 
@@ -224,6 +224,14 @@ async function blockCard(cardId:number){
 
 async function unblockCard(cardId:number){
     const result = await update(cardId, {isBlocked: false});
+}
+
+async function insertCardRecharge(cardId: number, amount: number){
+    const rechargeData: RechargeInsertData =  {
+        cardId:cardId,
+        amount:amount
+    }
+    const result = await insertRecharge(rechargeData);
 }
 
 const cardServices = {
@@ -245,7 +253,8 @@ const cardServices = {
     checkPasswordValidity,
     blockCard,
     checkIfCardAreBlocked,
-    unblockCard
+    unblockCard,
+    insertCardRecharge
 }
 
 export default cardServices;
