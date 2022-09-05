@@ -64,8 +64,11 @@ async function unblockCard(req: Request, res: Response){
 
 async function rechargeCard(req: Request, res: Response){
     const { cardId, amount } = req.body;
-    cardServices.validateRechargeAmount(amount);
-    res.status(200).send("Hello World!");
+    const { isBlocked, expirationDate } = await cardServices.getCardData(cardId);
+    cardServices.checkIfCardAreUnblocked(isBlocked);
+    cardServices.checkCardExpirationDate(expirationDate);
+    await cardServices.insertCardRecharge(cardId, amount);
+    res.status(201).send("The recharge has been inserted");
 }
 
 const cardController = {
