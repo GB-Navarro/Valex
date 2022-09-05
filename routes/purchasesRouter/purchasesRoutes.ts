@@ -5,6 +5,6 @@ import purchasesMiddlewares from "../../middlewares/purcharcesMiddlewares/purcha
 
 const purchasesRouter = Router();
 
-purchasesRouter.post("/purchases", purchasesMiddlewares.validatePointOfSalePurchaseSchema ,purchasesController.pointsOfSalePurchases);
+purchasesRouter.post("/purchases", purchasesMiddlewares.validatePointOfSalePurchaseSchema ,purchasesController.purchaseAtAPointOfSale);
 
 export default purchasesRouter;
